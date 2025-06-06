@@ -1,23 +1,29 @@
 .container {
-  width: 350px;
-  min-height: 400px;
+  width: 280px;
   color: #314d3e;
-  padding: 10px;
 }
 
 .title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 8px;
+}
+
+.textbox {
+  width: 100%;
+  font-size: 12px;
+  margin: 0;
+  padding: 0px 2px;
+}
+
+.textbox:focus {
+  outline: 0;
+  border-color: #66afe9;
 }
 
 .bookmarks {
-  margin: 10px 5px;
-  padding: 5px;
-  max-height: 320px; 
-  overflow-y: auto;  
+  margin: 5px 5px;
+  padding: 3px;
 }
 
 .bookmark {
@@ -26,26 +32,22 @@
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-radius: 0.8rem;
-  padding: 8px;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  background-color: #f9f9f9;
+  padding: 3px;
+  padding-bottom: 7px;
+  margin-bottom: 7px;
 }
 
-
-.bookmarks::-webkit-scrollbar {
-  width: 6px;
+.bookmark-title {
+  padding-left: 2px;
 }
 
-.bookmarks::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.bookmark-controls img {
+  margin: 0 4px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
-
-.bookmarks::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-
-.bookmarks::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.bookmark-controls {
+  flex: auto;
+  text-align: right;
 }
