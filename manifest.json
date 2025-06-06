@@ -1,0 +1,50 @@
+{
+    "name" : "Youtube Bookmark",
+    "version" : "1.0.0",
+    "description" : "It saves timestamps in Youtube videos",
+    "manifest_version" : 3,
+
+    "permissions" : [
+        "Storage", 
+        "tabs"
+    ],
+    "host_permissions" : [
+        "https://*youtube.com/*"
+    ],
+
+    "background" : {
+        "Service_worker" : "Background.js"
+    },
+
+    "content_scripts" : [
+        {
+            "matches" : [
+                "https://*.youtube.com/*"
+            ],
+            "js" : [
+                "Content.js"
+            ]
+        }
+    ],
+
+    "web_accessible_resources" : [
+        {
+            "resources" : [
+
+            ],
+            "matches" : [
+                "https://*.youtube.com/*"
+            ]
+        }
+    ],
+
+    "action" : {
+        "default_icon" : {
+            "16" : "",
+            "24" : "",
+            "32" : ""
+        },
+        "default_title" : "Youtube Bookmark",
+        "default_popup" : "Popup.html"
+    }
+}
