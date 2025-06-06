@@ -2,6 +2,16 @@
     let youtubeLeftControls, youtubePlayer;
     let currentVideo = "";
     let currentVideoBookmarks = [];
+    let bookmarkBtn = null; 
+
+
+    const removeExistingButton = () => {
+        const existingBtn = document.querySelector('.bookmark-btn');
+        if (existingBtn) {
+            existingBtn.removeEventListener('click', addNewBookmarkEventHandler);
+            existingBtn.remove();
+        }
+    };
 
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
         const {type, value, videoId} = obj;
@@ -28,28 +38,27 @@
     };
 
     const newVideoLoaded = async () => {
-        const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
+        removeExistingButton();  // Clean up any existing button first
+        
         currentVideoBookmarks = await fetchBookmarks();
+        
+        // Create new button
+        bookmarkBtn = document.createElement('img');
+        bookmarkBtn.src = chrome.runtime.getURL('assets/bookmark.png');
+        bookmarkBtn.className = 'ytp-button bookmark-btn';
+        bookmarkBtn.title = 'Click to bookmark current timestamp';
 
-        if (!bookmarkBtnExists) {
-            const bookmarkBtn = document.createElement("img");
+        // Wait for YouTube player to be ready
+        const waitForPlayer = setInterval(() => {
+            youtubeLeftControls = document.querySelector('.ytp-left-controls');
+            youtubePlayer = document.querySelector('.video-stream');
             
-            bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
-            bookmarkBtn.className = "ytp-button bookmark-btn";
-            bookmarkBtn.title = "Click to bookmark current timestamp";
-
-            // Wait for YouTube controls to be available
-            const waitForPlayer = setInterval(() => {
-                youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
-                youtubePlayer = document.getElementsByClassName("video-stream")[0];
-                
-                if (youtubeLeftControls && youtubePlayer) {
-                    clearInterval(waitForPlayer);
-                    youtubeLeftControls.appendChild(bookmarkBtn);
-                    bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
-                }
-            }, 500);
-        }
+            if (youtubeLeftControls && youtubePlayer) {
+                clearInterval(waitForPlayer);
+                youtubeLeftControls.prepend(bookmarkBtn);  // Use prepend to place it first
+                bookmarkBtn.addEventListener('click', addNewBookmarkEventHandler);
+            }
+        }, 100);
     };
 
     const addNewBookmarkEventHandler = async () => {
@@ -60,18 +69,33 @@
         };
 
         currentVideoBookmarks = await fetchBookmarks();
-
         chrome.storage.sync.set({
             [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
         });
     };
 
-    if (window.location.href.includes("youtube.com/watch")) {
-        const queryParameters = window.location.search.split("?")[1];
+    // Initialize for first load
+    if (window.location.href.includes('youtube.com/watch')) {
+        const queryParameters = window.location.search.split('?')[1];
         const urlParameters = new URLSearchParams(queryParameters);
-        currentVideo = urlParameters.get("v");
+        currentVideo = urlParameters.get('v');
         newVideoLoaded();
     }
+
+    const observer = new MutationObserver(() => {
+        if (window.location.href.includes('youtube.com/watch')) {
+            const queryParameters = window.location.search.split('?')[1];
+            const urlParameters = new URLSearchParams(queryParameters);
+            const newVideoId = urlParameters.get('v');
+            
+            if (newVideoId !== currentVideo) {
+                currentVideo = newVideoId;
+                newVideoLoaded();
+            }
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
 })();
 
 const getTime = t => {
