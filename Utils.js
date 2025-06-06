@@ -1,10 +1,9 @@
 export async function getCurrentTabURL() {
-    let queryOptions = {
-        active : true,
-        currentWindow : true
+    const queryOptions = {
+        active: true,
+        currentWindow: true
     };
 
-    let [tab] = await chrome.tabs.query(queryOptions);
-
-    return tabs
+    const [tab] = await chrome.tabs.query(queryOptions);
+    return tab;
 }

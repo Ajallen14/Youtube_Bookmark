@@ -1,50 +1,52 @@
 {
-    "name" : "Youtube Bookmark",
-    "version" : "1.0.0",
-    "description" : "It saves timestamps in Youtube videos",
-    "manifest_version" : 3,
+    "name": "Youtube Bookmark",
+    "version": "1.0.0",
+    "description": "It saves timestamps in Youtube videos",
+    "manifest_version": 3,
 
-    "permissions" : [
-        "Storage", 
+    "permissions": [
+        "storage", 
         "tabs"
     ],
-    "host_permissions" : [
+    "host_permissions": [
         "https://*youtube.com/*"
     ],
 
-    "background" : {
-        "Service_worker" : "Background.js"
+    "background": {
+        "service_worker": "Background.js"
     },
 
-    "content_scripts" : [
+    "content_scripts": [
         {
-            "matches" : [
+            "matches": [
                 "https://*.youtube.com/*"
             ],
-            "js" : [
+            "js": [
                 "Content.js"
             ]
         }
     ],
 
-    "web_accessible_resources" : [
+    "web_accessible_resources": [
         {
-            "resources" : [
-
+            "resources": [
+                "assets/bookmark.png",
+                "assets/play.png",
+                "assets/delete.png"
             ],
-            "matches" : [
+            "matches": [
                 "https://*.youtube.com/*"
             ]
         }
     ],
 
-    "action" : {
-        "default_icon" : {
-            "16" : "assests/ext-icon.png",
-            "24" : "assests/ext-icon.png",
-            "32" : "assests/ext-icon.png"
+    "action": {
+        "default_icon": {
+            "16": "assets/ext-icon.png",
+            "24": "assets/ext-icon.png",
+            "32": "assets/ext-icon.png"
         },
-        "default_title" : "Youtube Bookmark",
-        "default_popup" : "Popup.html"
+        "default_title": "Youtube Bookmark",
+        "default_popup": "Popup.html"
     }
 }
