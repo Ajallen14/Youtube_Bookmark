@@ -1,7 +1,7 @@
 {
   "name": "Youtube Bookmarks",
   "version": "0.1.0",
-  "description": "Saving timestamps in YT videos",
+  "description": "It saves timestamps in Youtube videos",
   "icons" : {
       "128" : "assets/Logo.png"
   },
