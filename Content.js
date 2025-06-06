@@ -35,14 +35,20 @@
             const bookmarkBtn = document.createElement("img");
             
             bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
-            bookmarkBtn.className = "ytp-button " + "bookmark-btn";
+            bookmarkBtn.className = "ytp-button bookmark-btn";
             bookmarkBtn.title = "Click to bookmark current timestamp";
 
-            youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
-            youtubePlayer = document.getElementsByClassName("video-stream")[0];
-            
-            youtubeLeftControls.appendChild(bookmarkBtn);
-            bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+            // Wait for YouTube controls to be available
+            const waitForPlayer = setInterval(() => {
+                youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
+                youtubePlayer = document.getElementsByClassName("video-stream")[0];
+                
+                if (youtubeLeftControls && youtubePlayer) {
+                    clearInterval(waitForPlayer);
+                    youtubeLeftControls.appendChild(bookmarkBtn);
+                    bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+                }
+            }, 500);
         }
     };
 
@@ -60,7 +66,12 @@
         });
     };
 
-    newVideoLoaded();
+    if (window.location.href.includes("youtube.com/watch")) {
+        const queryParameters = window.location.search.split("?")[1];
+        const urlParameters = new URLSearchParams(queryParameters);
+        currentVideo = urlParameters.get("v");
+        newVideoLoaded();
+    }
 })();
 
 const getTime = t => {
