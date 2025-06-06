@@ -21,55 +21,48 @@ const addNewBookmark = (bookmarks, bookmark) => {
   bookmarks.appendChild(newBookmarkElement);
 };
 
-const viewBookmarks = (currentBookmarks = []) => {
+const viewBookmarks = (currentBookmarks=[]) => {
   const bookmarksElement = document.getElementById("bookmarks");
   bookmarksElement.innerHTML = "";
 
   if (currentBookmarks.length > 0) {
-    currentBookmarks.forEach(bookmark => {
+    for (let i = 0; i < currentBookmarks.length; i++) {
+      const bookmark = currentBookmarks[i];
       addNewBookmark(bookmarksElement, bookmark);
-    });
+    }
   } else {
     bookmarksElement.innerHTML = '<i class="row">No bookmarks to show</i>';
   }
+
+  return;
 };
 
 const onPlay = async e => {
-  try {
-    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-    const activeTab = await getActiveTabURL();
+  const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+  const activeTab = await getActiveTabURL();
 
-    await chrome.tabs.sendMessage(activeTab.id, {
-      type: "PLAY",
-      value: bookmarkTime,
-    });
-  } catch (error) {
-    console.error("Error playing bookmark:", error);
-  }
+  chrome.tabs.sendMessage(activeTab.id, {
+    type: "PLAY",
+    value: bookmarkTime,
+  });
 };
 
 const onDelete = async e => {
-  try {
-    const activeTab = await getActiveTabURL();
-    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-    const bookmarkElementToDelete = document.getElementById(
-      "bookmark-" + bookmarkTime
-    );
+  const activeTab = await getActiveTabURL();
+  const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+  const bookmarkElementToDelete = document.getElementById(
+    "bookmark-" + bookmarkTime
+  );
 
-    if (bookmarkElementToDelete) {
-      bookmarkElementToDelete.remove();
-    }
+  bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete);
 
-    await chrome.tabs.sendMessage(activeTab.id, {
-      type: "DELETE",
-      value: bookmarkTime,
-    }, viewBookmarks);
-  } catch (error) {
-    console.error("Error deleting bookmark:", error);
-  }
+  chrome.tabs.sendMessage(activeTab.id, {
+    type: "DELETE",
+    value: bookmarkTime,
+  }, viewBookmarks);
 };
 
-const setBookmarkAttributes = (src, eventListener, controlParentElement) => {
+const setBookmarkAttributes =  (src, eventListener, controlParentElement) => {
   const controlElement = document.createElement("img");
 
   controlElement.src = "assets/" + src + ".png";
@@ -79,29 +72,21 @@ const setBookmarkAttributes = (src, eventListener, controlParentElement) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const activeTab = await getActiveTabURL();
-    const queryParameters = activeTab.url.split("?")[1];
-    const urlParameters = new URLSearchParams(queryParameters);
+  const activeTab = await getActiveTabURL();
+  const queryParameters = activeTab.url.split("?")[1];
+  const urlParameters = new URLSearchParams(queryParameters);
 
-    const currentVideo = urlParameters.get("v");
+  const currentVideo = urlParameters.get("v");
 
-    if (activeTab.url.includes("youtube.com/watch") && currentVideo) {
-      chrome.storage.sync.get([currentVideo], (data) => {
-        if (chrome.runtime.lastError) {
-          console.error("Storage access error:", chrome.runtime.lastError);
-          return;
-        }
-        const currentVideoBookmarks = data[currentVideo] ? JSON.parse(data[currentVideo]) : [];
-        viewBookmarks(currentVideoBookmarks);
-      });
-    } else {
-      const container = document.getElementsByClassName("container")[0];
-      container.innerHTML = '<div class="title">This is not a YouTube video page.</div>';
-    }
-  } catch (error) {
-    console.error("Popup initialization error:", error);
+  if (activeTab.url.includes("youtube.com/watch") && currentVideo) {
+    chrome.storage.sync.get([currentVideo], (data) => {
+      const currentVideoBookmarks = data[currentVideo] ? JSON.parse(data[currentVideo]) : [];
+
+      viewBookmarks(currentVideoBookmarks);
+    });
+  } else {
     const container = document.getElementsByClassName("container")[0];
-    container.innerHTML = '<div class="title">Error loading bookmarks. Please refresh.</div>';
+
+    container.innerHTML = '<div class="title">This is not a youtube video page.</div>';
   }
 });
