@@ -40,9 +40,9 @@
 
     "action" : {
         "default_icon" : {
-            "16" : "assets/ext-icon.png",
-            "24" : "assets/ext-icon.png",
-            "32" : "assets/ext-icon.png"
+            "16" : "assests/ext-icon.png",
+            "24" : "assests/ext-icon.png",
+            "32" : "assests/ext-icon.png"
         },
         "default_title" : "Youtube Bookmark",
         "default_popup" : "Popup.html"
